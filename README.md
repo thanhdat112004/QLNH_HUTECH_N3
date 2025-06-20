@@ -174,3 +174,25 @@ CREATE TABLE InvoiceDetails (
     CONSTRAINT FK_InvoiceDetails_MenuItem FOREIGN KEY (MenuItemId) REFERENCES MenuItems(MenuItemId)
 );
 GO
+
+## 2. Cài package tools EF , EF Core cho SQL Server , # Scaffold toàn bộ database để sinh models
+# Cài package tools EF nếu chưa có
+dotnet tool install --global dotnet-ef
+
+# Cài các package EF Core cho SQL Server
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package BCrypt.Net-Next
+
+# Scaffold toàn bộ database
+
+dotnet ef dbcontext scaffold "Server=.;Database=RestaurantDB;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer --output-dir Models --context-dir Data --context AppDbContext --data-annotations --use-database-names
+
+
+
+
+
+
+
+
+
