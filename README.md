@@ -52,7 +52,24 @@ CREATE TABLE RestaurantTables (
 );
 GO
 
--- 5. MenuItems: danh mục món, kèm flag featured
+-- 5. Categories: danh mục món ăn (burger, pizza, ...)
+CREATE TABLE Categories (
+    CategoryId INT           IDENTITY(1,1) PRIMARY KEY,
+    Name       NVARCHAR(100) NOT NULL UNIQUE,
+    Slug       NVARCHAR(100) NOT NULL UNIQUE
+);
+GO
+
+-- Seed một số danh mục mẫu
+INSERT INTO Categories (Name, Slug)
+VALUES
+  ('Burger', 'burger'),
+  ('Pizza',  'pizza'),
+  ('Pasta',  'pasta'),
+  ('Fries',  'fries');
+GO
+
+-- 6. MenuItems: danh mục món, kèm flag featured
 CREATE TABLE MenuItems (
     MenuItemId    INT           IDENTITY(1,1) PRIMARY KEY,
     Name          NVARCHAR(100) NOT NULL,
@@ -62,11 +79,17 @@ CREATE TABLE MenuItems (
     ImageUrl      NVARCHAR(255) NULL,
     CreatedAt     DATETIME2     NOT NULL DEFAULT GETDATE(),
     IsFeatured    BIT           NOT NULL DEFAULT 0,
-    FeaturedOrder INT           NOT NULL DEFAULT 0
+    FeaturedOrder INT           NOT NULL DEFAULT 0,
+    CategoryId    INT           NOT NULL
 );
 GO
 
--- 6. Orders: DineIn vs Takeaway
+ALTER TABLE MenuItems
+ADD CONSTRAINT FK_MenuItems_Categories
+    FOREIGN KEY (CategoryId) REFERENCES Categories(CategoryId);
+GO
+
+-- 7. Orders: DineIn vs Takeaway
 CREATE TABLE Orders (
     OrderId       INT           IDENTITY(1,1) PRIMARY KEY,
     UserId        INT           NOT NULL,
@@ -86,7 +109,7 @@ CREATE TABLE Orders (
 );
 GO
 
--- 7. OrderItems: chi tiết món trong đơn
+-- 8. OrderItems: chi tiết món trong đơn
 CREATE TABLE OrderItems (
     OrderItemId INT           IDENTITY(1,1) PRIMARY KEY,
     OrderId     INT           NOT NULL,
@@ -98,7 +121,7 @@ CREATE TABLE OrderItems (
 );
 GO
 
--- 8. Payments: ghi nhận thanh toán
+-- 9. Payments: ghi nhận thanh toán
 CREATE TABLE Payments (
     PaymentId     INT           IDENTITY(1,1) PRIMARY KEY,
     OrderId       INT           NOT NULL,
@@ -109,7 +132,7 @@ CREATE TABLE Payments (
 );
 GO
 
--- 9. EmailVerifications: token xác thực email / reset mật khẩu
+-- 10. EmailVerifications: token xác thực email / reset mật khẩu
 CREATE TABLE EmailVerifications (
     VerificationId INT              IDENTITY(1,1) PRIMARY KEY,
     UserId         INT              NOT NULL,
@@ -122,7 +145,7 @@ CREATE TABLE EmailVerifications (
 );
 GO
 
--- 10. Reservations: đặt bàn
+-- 11. Reservations: đặt bàn
 CREATE TABLE Reservations (
     ReservationId   INT           IDENTITY(1,1) PRIMARY KEY,
     UserId          INT           NULL,                         -- NULL nếu guest
@@ -145,7 +168,7 @@ CREATE UNIQUE INDEX UX_Reservations_Slot
     ON Reservations (TableId, ReservationDate, ReservationTime);
 GO
 
--- 11. Invoices: lưu thông tin hoá đơn
+-- 12. Invoices: lưu thông tin hoá đơn
 CREATE TABLE Invoices (
     InvoiceId        INT           IDENTITY(1,1) PRIMARY KEY,
     OrderId          INT           NOT NULL,
@@ -162,7 +185,7 @@ CREATE TABLE Invoices (
 );
 GO
 
--- 12. InvoiceDetails: chi tiết hoá đơn
+-- 13. InvoiceDetails: chi tiết hoá đơn
 CREATE TABLE InvoiceDetails (
     InvoiceDetailId  INT           IDENTITY(1,1) PRIMARY KEY,
     InvoiceId        INT           NOT NULL,
@@ -174,6 +197,7 @@ CREATE TABLE InvoiceDetails (
     CONSTRAINT FK_InvoiceDetails_MenuItem FOREIGN KEY (MenuItemId) REFERENCES MenuItems(MenuItemId)
 );
 GO
+
 
 ## 2. Cài package tools EF , EF Core cho SQL Server , # Scaffold toàn bộ database để sinh models
 # Cài package tools EF nếu chưa có
