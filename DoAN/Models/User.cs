@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DoAN.Models;
 
-[Index("Username", Name = "UQ__Users__536C85E430EFD59A", IsUnique = true)]
-[Index("Email", Name = "UQ__Users__A9D10534E94A42C3", IsUnique = true)]
+[Index("Username", Name = "UQ__Users__536C85E42EDF8F8F", IsUnique = true)]
+[Index("Email", Name = "UQ__Users__A9D105344979C149", IsUnique = true)]
 public partial class User
 {
     [Key]

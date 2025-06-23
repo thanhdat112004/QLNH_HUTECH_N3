@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DoAN.Models;
 
-[Index("Name", Name = "UQ__Roles__737584F6213FCBF0", IsUnique = true)]
+[Index("Name", Name = "UQ__Roles__737584F673016B99", IsUnique = true)]
 public partial class Role
 {
     [Key]

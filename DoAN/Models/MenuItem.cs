@@ -31,6 +31,12 @@ public partial class MenuItem
 
     public int FeaturedOrder { get; set; }
 
+    public int CategoryId { get; set; }
+
+    [ForeignKey("CategoryId")]
+    [InverseProperty("MenuItems")]
+    public virtual Category Category { get; set; } = null!;
+
     [InverseProperty("MenuItem")]
     public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; } = new List<InvoiceDetail>();
 

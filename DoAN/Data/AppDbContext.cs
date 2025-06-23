@@ -16,6 +16,8 @@ public partial class AppDbContext : DbContext
     {
     }
 
+    public virtual DbSet<Category> Categories { get; set; }
+
     public virtual DbSet<EmailVerification> EmailVerifications { get; set; }
 
     public virtual DbSet<Invoice> Invoices { get; set; }
@@ -46,9 +48,14 @@ public partial class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A0B3B4DC4DB");
+        });
+
         modelBuilder.Entity<EmailVerification>(entity =>
         {
-            entity.HasKey(e => e.VerificationId).HasName("PK__EmailVer__306D49078BDE450F");
+            entity.HasKey(e => e.VerificationId).HasName("PK__EmailVer__306D4907CEFA4FE2");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Token).HasDefaultValueSql("(newid())");
@@ -60,7 +67,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Invoice>(entity =>
         {
-            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoices__D796AAB522B407CB");
+            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoices__D796AAB58341EF7F");
 
             entity.Property(e => e.InvoiceDate).HasDefaultValueSql("(getdate())");
 
@@ -73,7 +80,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<InvoiceDetail>(entity =>
         {
-            entity.HasKey(e => e.InvoiceDetailId).HasName("PK__InvoiceD__1F1578118F9E6548");
+            entity.HasKey(e => e.InvoiceDetailId).HasName("PK__InvoiceD__1F157811325195F7");
 
             entity.Property(e => e.LineTotal).HasComputedColumnSql("([Quantity]*[UnitPrice])", true);
 
@@ -88,14 +95,18 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<MenuItem>(entity =>
         {
-            entity.HasKey(e => e.MenuItemId).HasName("PK__MenuItem__8943F722B7BB6CF9");
+            entity.HasKey(e => e.MenuItemId).HasName("PK__MenuItem__8943F72227E5BFEC");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Category).WithMany(p => p.MenuItems)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_MenuItems_Categories");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCF6C67EE69");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCF8791FB05");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.OrderType).HasDefaultValue("DineIn");
@@ -111,7 +122,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<OrderItem>(entity =>
         {
-            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED0681787A6104");
+            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED0681CEF7F9CD");
 
             entity.HasOne(d => d.MenuItem).WithMany(p => p.OrderItems)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -124,7 +135,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.PaymentId).HasName("PK__Payments__9B556A3808EA1F2F");
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payments__9B556A38F66032E0");
 
             entity.Property(e => e.PaidAt).HasDefaultValueSql("(getdate())");
 
@@ -135,7 +146,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Reservation>(entity =>
         {
-            entity.HasKey(e => e.ReservationId).HasName("PK__Reservat__B7EE5F241244A41D");
+            entity.HasKey(e => e.ReservationId).HasName("PK__Reservat__B7EE5F24F3CA093D");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.NumberOfGuests).HasDefaultValue(1);
@@ -150,19 +161,19 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<RestaurantTable>(entity =>
         {
-            entity.HasKey(e => e.TableId).HasName("PK__Restaura__7D5F01EEBFED7E96");
+            entity.HasKey(e => e.TableId).HasName("PK__Restaura__7D5F01EE222527C5");
 
             entity.Property(e => e.Status).HasDefaultValue("Available");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE1A39DE2F3E");
+            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE1A1357B7B1");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C0F190EB3");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4CCEB777BA");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
         });

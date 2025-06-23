@@ -38,14 +38,14 @@ namespace DoAN.Controllers
             if (!ModelState.IsValid)
                 return View(vm);
 
-            // Kiểm tra Username/Email chưa tồn tại
+            // 1) Kiểm tra Username/Email chưa tồn tại
             if (await _db.Users.AnyAsync(u => u.Username == vm.Username || u.Email == vm.Email))
             {
                 ModelState.AddModelError(string.Empty, "Username hoặc Email đã tồn tại.");
                 return View(vm);
             }
 
-            // Tạo user mới
+            // 2) Tạo user mới
             var user = new User
             {
                 Username = vm.Username,
@@ -57,7 +57,17 @@ namespace DoAN.Controllers
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
 
-            // Tạo token xác thực và lưu
+            // 3) Gán role “User” mặc định
+            var defaultRole = await _db.Roles.SingleAsync(r => r.Name == "User");
+            _db.UserRoles.Add(new UserRole
+            {
+                UserId = user.UserId,
+                RoleId = defaultRole.RoleId,
+                AssignedAt = DateTime.UtcNow
+            });
+            await _db.SaveChangesAsync();
+
+            // 4) Tạo token xác thực và lưu
             var token = Guid.NewGuid();
             _db.EmailVerifications.Add(new EmailVerification
             {
@@ -70,16 +80,14 @@ namespace DoAN.Controllers
             });
             await _db.SaveChangesAsync();
 
-            // Gửi email xác thực
-            var confirmLink = Url.Action(
-                "ConfirmEmail", "Account",
-                new { token },
-                Request.Scheme);
+            // 5) Gửi email xác thực
+            var confirmLink = Url.Action("ConfirmEmail", "Account", new { token }, Request.Scheme);
             var html = $"Vui lòng bấm <a href=\"{confirmLink}\">vào đây</a> để xác thực email (hết hạn sau 24h).";
             await _emailSender.SendEmailAsync(user.Email, "Xác thực tài khoản", html);
 
             return RedirectToAction("RegistrationSuccess");
         }
+
 
         // GET: /Account/RegistrationSuccess
         [HttpGet]
@@ -117,6 +125,7 @@ namespace DoAN.Controllers
         }
 
         // POST: /Account/Login
+        // POST: /Account/Login
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginVm vm, string returnUrl = null)
         {
@@ -142,18 +151,21 @@ namespace DoAN.Controllers
                 return View(vm);
             }
 
+            // Tạo claims
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name,           user.Username)
-            };
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        new Claim(ClaimTypes.Name,           user.Username)
+    };
 
+            // Lấy danh sách role
             var roles = await _db.UserRoles
                                  .Where(ur => ur.UserId == user.UserId)
                                  .Select(ur => ur.Role.Name)
                                  .ToListAsync();
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
+            // Đăng nhập bằng cookie
             var principal = new ClaimsPrincipal(
                 new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme)
             );
@@ -161,11 +173,18 @@ namespace DoAN.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 principal);
 
+            // Nếu có returnUrl thì quay lại
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
+            // Nếu user có role "User" thì redirect thẳng qua Menu
+            if (roles.Contains("User"))
+                return RedirectToAction("Menu", "Home");
+
+            // Các trường hợp còn lại về Home/Index
             return RedirectToAction("Index", "Home");
         }
+
 
         // POST: /Account/Logout
         [HttpPost, ValidateAntiForgeryToken]
