@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DoAN.Models;
 
-[Index("TableNumber", Name = "UQ__Restaura__E8E0DB523D34B8B9", IsUnique = true)]
+[Index("TableNumber", Name = "UQ__Restaura__E8E0DB527EDAF6FE", IsUnique = true)]
 public partial class RestaurantTable
 {
     [Key]
