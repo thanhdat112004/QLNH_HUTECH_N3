@@ -127,6 +127,7 @@ namespace DoAN.Controllers
         // POST: /Account/Login
         // POST: /Account/Login
         [HttpPost, ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Login(LoginVm vm, string returnUrl = null)
         {
             if (!ModelState.IsValid)
@@ -138,8 +139,7 @@ namespace DoAN.Controllers
                     u.Email == vm.UsernameOrEmail);
 
             if (user == null ||
-                _pwHasher.VerifyHashedPassword(user, user.PasswordHash, vm.Password)
-                    == PasswordVerificationResult.Failed)
+                _pwHasher.VerifyHashedPassword(user, user.PasswordHash, vm.Password) == PasswordVerificationResult.Failed)
             {
                 ModelState.AddModelError(string.Empty, "Sai tên đăng nhập hoặc mật khẩu.");
                 return View(vm);
@@ -151,47 +151,43 @@ namespace DoAN.Controllers
                 return View(vm);
             }
 
+            // Lấy danh sách Role
+            var roles = await _db.UserRoles
+                .Where(ur => ur.UserId == user.UserId)
+                .Select(ur => ur.Role.Name)
+                .ToListAsync();
+
             // Tạo claims
             var claims = new List<Claim>
     {
         new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-        new Claim(ClaimTypes.Name,           user.Username)
+        new Claim(ClaimTypes.Name, user.Username)
     };
 
-            // Lấy danh sách role
-            var roles = await _db.UserRoles
-                                 .Where(ur => ur.UserId == user.UserId)
-                                 .Select(ur => ur.Role.Name)
-                                 .ToListAsync();
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-            // Đăng nhập bằng cookie
-            var principal = new ClaimsPrincipal(
-                new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme)
-            );
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal);
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(claimsIdentity);
 
-            // Nếu có returnUrl thì quay lại
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            // Nếu có returnUrl thì ưu tiên redirect về đó
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
-            // Nếu user có role "User" thì redirect thẳng qua Menu
+            // Chuyển hướng theo Role
+            if (roles.Contains("Admin"))
+                return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+
+            if (roles.Contains("Employee"))
+                return RedirectToAction("Index", "Home"); // hoặc "Orders", "Manage"
+
             if (roles.Contains("User"))
                 return RedirectToAction("Menu", "Home");
 
-            // Các trường hợp còn lại về Home/Index
+            // Không rõ role thì về trang chính
             return RedirectToAction("Index", "Home");
         }
 
-
-        // POST: /Account/Logout
-        [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Home");
-        }
     }
 }

@@ -1,0 +1,76 @@
+﻿@model DoAN.Models.MenuItem
+@{
+    Layout = null;
+    ViewData["Title"] = "Xác nhận xóa món ăn";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/bootstrap.css" />
+    <style>
+        body {
+            background-color: #222831;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .delete-box {
+            max-width: 500px;
+            margin: 100px auto;
+            background: #393e46;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+            .delete-box h2 {
+                color: #ffbe33;
+                font-family: 'Dancing Script', cursive;
+            }
+
+        .btn-feane {
+            background-color: #ffbe33;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 30px;
+            border: none;
+            margin: 10px;
+            font-weight: 600;
+        }
+
+        .btn-outline-light {
+            border: 1px solid #eee;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 30px;
+            margin: 10px;
+        }
+
+        .preview-img {
+            max-height: 180px;
+            margin: 15px 0;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="delete-box">
+        <h2>Xác nhận xóa món ăn</h2>
+        <p>Bạn có chắc muốn xóa <strong>@Model.Name</strong>?</p>
+
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" class="preview-img" alt="Ảnh món ăn" />
+        }
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="MenuItemId" />
+            <button type="submit" class="btn-feane">Xóa</button>
+            <a asp-action="Index" class="btn-outline-light">Hủy</a>
+        </form>
+    </div>
+</body>
+</html>
