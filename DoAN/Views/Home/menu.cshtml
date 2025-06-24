@@ -37,6 +37,7 @@
     <!-- responsive style -->
     <link href="~/css/responsive.css" rel="stylesheet" />
     <style>
+        /* === CART MODAL STYLES === */
         .custom-modal-overlay {
             display: none;
             position: fixed;
@@ -60,8 +61,7 @@
             padding: 2rem;
             max-width: 400px;
             width: 90%;
-            text-align: center;
-            font-family: 'Poppins',sans-serif;
+            font-family: 'Poppins', sans-serif;
             z-index: 1001;
         }
 
@@ -70,29 +70,72 @@
                 font-weight: 700;
                 margin-bottom: 1rem;
                 text-transform: uppercase;
+                text-align: center;
             }
 
-            .custom-modal p {
-                margin-bottom: 1.5rem;
-            }
+        .cart-item {
+            padding: .5rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-            .custom-modal .btn-modal {
-                background: linear-gradient(90deg,#ffbe33,#e69c00);
+            .cart-item .qty-btn {
                 border: none;
-                border-radius: 30px;
-                padding: .75rem 1.5rem;
-                font-size: 1rem;
-                font-weight: 600;
-                color: #fff;
-                margin: 0 .5rem;
+                background: #eee;
+                padding: .25rem .5rem;
                 cursor: pointer;
-                transition: .2s ease;
             }
 
-                .custom-modal .btn-modal:hover {
-                    background: linear-gradient(90deg,#e69c00,#ffbe33);
-                    transform: translateY(-3px);
-                }
+            .cart-item .remove-btn {
+                border: none;
+                background: none;
+                color: red;
+                font-size: 1.2rem;
+                cursor: pointer;
+                margin-left: .5rem;
+            }
+
+        .btn-modal {
+            background: linear-gradient(90deg,#ffbe33,#e69c00);
+            border: none;
+            border-radius: 30px;
+            padding: .75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0.7rem;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+            .btn-modal:hover {
+                background: linear-gradient(90deg,#e69c00,#ffbe33);
+                transform: translateY(-3px);
+            }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+        }
+
+      
+
     </style>
 </head>
 
@@ -236,12 +279,12 @@
                     {
                         // Lấy slug để biến thành class filter (burger, pizza, ...)
                         var categoryClass = item.Category?.Slug ?? "";
-
+                        var imagePath = Url.Content(item.ImageUrl.StartsWith("/") ? item.ImageUrl : "~/images/" + item.ImageUrl);
                         <div class="col-sm-6 col-lg-4 all @categoryClass">
                             <div class="box">
                                 <div>
                                     <div class="img-box">
-                                        <img src="~/images/@item.ImageUrl" alt="@item.Name" />
+                                        <img src="@imagePath" alt="@item.Name" />
                                     </div>
                                     <div class="detail-box">
                                         <h5>@item.Name</h5>
@@ -252,7 +295,8 @@
                                                class="add-cart"
                                                data-id="@item.MenuItemId"
                                                data-name="@item.Name"
-                                               data-price="@item.Price">
+                                               data-price="@item.Price"
+                                               data-image="@imagePath">
                                                 <!-- icon giỏ hàng -->
                                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
                                                 <g>
@@ -403,109 +447,200 @@
             </div>
         </div>
     </footer>
-    <!-- ===== overlay + modal ===== -->
-    <div class="custom-modal-overlay" id="diningModalOverlay"></div>
-    <div class="custom-modal" id="diningModal">
-        <h5>Bạn muốn</h5>
-        <p>Vui lòng chọn hình thức:</p>
-        <button class="btn-modal" data-type="table">Ăn tại bàn</button>
-        <button class="btn-modal" data-type="takeaway">Mang về</button>
-    </div>
-    <!-- overlay + modal cho giỏ hàng -->
-    <div class="custom-modal-overlay" id="cartModalOverlay"></div>
     <div class="custom-modal" id="cartModal">
+        <button class="close-modal-btn" id="closeModalBtn">&times;</button>
         <h5>Giỏ hàng của bạn</h5>
-        <div id="cartItems" style="max-height:300px;overflow:auto;text-align:left;margin-bottom:1rem;">
-            <!-- JS sẽ đổ nội dung ở đây -->
+        <div id="cartItems"></div>
+        <hr />
+        <div style="margin: 1rem 0;">
+            <label><strong>Hình thức:</strong></label><br />
+            <label><input type="radio" name="orderType" value="DineIn" checked /> Ăn tại bàn</label><br />
+            <label><input type="radio" name="orderType" value="Takeaway" /> Mang về</label>
         </div>
-        <div>
-            <button id="checkoutBtn" class="btn-modal">Thanh toán</button>
+
+        <div id="tableSelection">
+            <h5>Chọn bàn</h5>
+            <div id="availableTables">
+                <!-- Các bàn sẽ được liệt kê ở đây -->
+            </div>
         </div>
+
+        <div id="dineinActions">
+            <button id="orderMoreBtn" class="btn-modal">Gọi món</button>
+        </div>
+        <button id="checkoutCart" class="btn-modal">Thanh toán</button>
     </div>
-    <script>
-        $(function(){
-          // 1) Load cart từ localStorage nếu có
-          var cart = JSON.parse(localStorage.getItem('cart') || '[]');
-          updateCartModal();
 
-          // 2) Bấm vào nút add-cart trên sản phẩm
-          $('.add-cart').on('click', function(e){
-            e.preventDefault();
-            var id    = $(this).data('id'),
-                name  = $(this).data('name'),
-                price = parseFloat($(this).data('price'));
-            // tìm xem đã có trong cart chưa
-            var existing = cart.find(function(x){ return x.id === id; });
-            if(existing){
-              existing.qty++;
-            } else {
-              cart.push({ id:id, name:name, price:price, qty:1 });
-            }
-            // lưu và cập nhật UI
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartModal();
-          });
-
-          // 3) Mở modal giỏ hàng khi click icon bên header
-          $('.cart_link').on('click', function(e){
-            e.preventDefault();
-            updateCartModal();
-            $('#cartModalOverlay, #cartModal').fadeIn(200);
-          });
-
-          // 4) Đóng modal khi click overlay
-          $('#cartModalOverlay').on('click', function(){
-            $('#cartModalOverlay, #cartModal').fadeOut(200);
-          });
-
-          // 5) Nút Thanh toán
-          $('#checkoutBtn').on('click', function(){
-            window.location.href = '@Url.Action("Checkout", "Order")';
-          });
-
-          // Hàm build lại HTML cho #cartItems
-          function updateCartModal(){
-            if(cart.length===0){
-              $('#cartItems').html('<p>Chưa có món nào trong giỏ.</p>');
-              return;
-            }
-            var html = '';
-            cart.forEach(function(item){
-              html +=
-                '<div class="cart-item" style="padding:.5rem 0; border-bottom:1px solid #eee;">'+
-                  '<span class="name" style="font-weight:500;">'+item.name+'</span>'+
-                  '<span class="qty" style="margin-left:1rem; font-weight:600;">x'+item.qty+'</span>'+
-                  '<span class="price float-right" style="font-weight:600;">$'+(item.price*item.qty).toFixed(2)+'</span>'+
-                '</div>';
-            });
-            $('#cartItems').html(html);
-          }
-        });
-    </script>
-
-    <!-- JS thư viện (chỉ include 1 lần thôi) -->
+    <!-- jQuery -->
     <script src="~/js/jquery-3.4.1.min.js"></script>
-    <script src="~/js/bootstrap.js"></script>
-    <script src="~/js/custom.js"></script>
-
-    <!-- script khởi động modal -->
     <script>
-        $(function() {
-          // hiện modal ngay khi vào trang Menu
-          $('#diningModalOverlay, #diningModal').fadeIn(200);
+        $(function () {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-          // click overlay để đóng
-          $('#diningModalOverlay').on('click', function() {
-            $('#diningModalOverlay, #diningModal').fadeOut(200);
-          });
+            function updateCart() {
+                const $cartItems = $('#cartItems');
+                $cartItems.empty();
 
-          // click chọn sẽ redirect sang Order/Create
-          $('.btn-modal').on('click', function(){
-            var type = $(this).data('type');
-            window.location.href = '@Url.Action("Create", "Order")?type=' + type;
-          });
+                if (cart.length === 0) {
+                    $cartItems.html('<p>Chưa có món nào trong giỏ hàng.</p>');
+                    return;
+                }
+
+                cart.forEach(item => {
+                    $cartItems.append(`
+                        <div class="cart-item" data-id="${item.id}" style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+                            <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover;">
+                            <div class="cart-item-details" style="flex: 1;">
+                                <h6 style="margin: 0 0 5px;">${item.name}</h6>
+                                <p style="margin: 0;">$${item.price.toFixed(2)} x ${item.quantity}</p>
+                            </div>
+                            <div>
+                                <button class="qty-btn decrease">-</button>
+                                <span class="qty">${item.quantity}</span>
+                                <button class="qty-btn increase">+</button>
+                                <button class="remove-btn">×</button>
+                            </div>
+                        </div>
+                    `);
+                });
+
+                localStorage.setItem('cart', JSON.stringify(cart));
+            }
+
+            // Thêm món vào giỏ
+            $('.add-cart').on('click', function (e) {
+                e.preventDefault();
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                const price = parseFloat($(this).data('price'));
+                const image = $(this).data('image');
+
+                const existing = cart.find(i => i.id === id);
+                if (existing) existing.quantity++;
+                else cart.push({ id, name, price, image, quantity: 1 });
+
+                updateCart();
+                $('#cartModal').fadeIn(200);
+            });
+
+            // Hiển thị bàn trống khi chọn "Ăn tại bàn"
+            $('input[name="orderType"]').on('change', function () {
+                const orderType = $('input[name="orderType"]:checked').val();
+
+                if (orderType === 'DineIn') {
+                    $('#tableSelection').show();
+
+                    // Lấy danh sách bàn trống
+                    $.get('/Home/GetAvailableTables', function (data) {
+                        $('#availableTables').empty();
+                        if (data.length === 0) {
+                            $('#availableTables').html('<p>Không có bàn trống nào.</p>');
+                        } else {
+                            data.forEach(table => {
+                                $('#availableTables').append(`
+                                    <button class="btn btn-primary table-btn" data-table-id="${table.tableId}">
+                                        Bàn ${table.tableNumber}
+                                    </button>
+                                `);
+                            });
+
+                            // Khi người dùng chọn bàn
+                            $('.table-btn').on('click', function () {
+                                const selectedTableId = $(this).data('table-id');
+                                $('#selectedTableId').val(selectedTableId);  // Lưu lại ID bàn
+                            });
+                        }
+                    });
+                } else {
+                    $('#tableSelection').hide();
+                }
+            });
+
+            // Xử lý gọi món
+            $('#orderMoreBtn').on('click', function () {
+                const type = $('input[name="orderType"]:checked').val();
+                const tableId = $('#selectedTableId').val();  // Lấy ID bàn đã chọn
+
+                if (cart.length === 0) {
+                    alert('Giỏ hàng đang trống!');
+                    return;
+                }
+
+                if (type === 'DineIn') {
+                    if (!tableId) {
+                        alert('Vui lòng chọn bàn.');
+                        return;
+                    }
+
+                    $.post('/Order/CallItem', {
+                        cartData: JSON.stringify(cart),
+                        tableId: tableId
+                    }).done(function (res) {
+                        alert('Gọi món thành công!');
+                        cart = [];
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        updateCart();
+                        $('#cartModal').fadeOut(200);
+                    }).fail(function (xhr) {
+                        alert('Lỗi khi gọi món: ' + xhr.responseText);
+                    });
+                } else if (type === 'Takeaway') {
+                    const name = prompt("Nhập tên khách hàng:");
+                    const phone = prompt("Nhập số điện thoại:");
+                    const address = prompt("Nhập địa chỉ:");
+
+                    if (!name || !phone || !address) {
+                        alert("Vui lòng nhập đầy đủ thông tin mang về.");
+                        return;
+                    }
+
+                    $.post('/Order/Create', {
+                        cartData: JSON.stringify(cart),
+                        type: 'Takeaway',
+                        customerName: name,
+                        phone: phone,
+                        address: address
+                    }).done(function (res) {
+                        window.location.href = '/Order/Confirmation/' + res.orderId;
+                    }).fail(function (xhr) {
+                        alert('Lỗi khi đặt món mang về: ' + xhr.responseText);
+                    });
+                }
+            });
+
+            // Các nút tăng, giảm số lượng và xóa món trong giỏ
+            $('#cartItems')
+                .on('click', '.increase', function () {
+                    const id = $(this).closest('.cart-item').data('id');
+                    const item = cart.find(i => i.id === id);
+                    if (item) {
+                        item.quantity++;
+                        updateCart();
+                    }
+                })
+                .on('click', '.decrease', function () {
+                    const id = $(this).closest('.cart-item').data('id');
+                    const item = cart.find(i => i.id === id);
+                    if (item && item.quantity > 1) {
+                        item.quantity--;
+                    } else {
+                        cart = cart.filter(i => i.id !== id);
+                    }
+                    updateCart();
+                })
+                .on('click', '.remove-btn', function () {
+                    const id = $(this).closest('.cart-item').data('id');
+                    cart = cart.filter(i => i.id !== id);
+                    updateCart();
+                });
+
+            // Đóng modal
+            $('#closeModalBtn').on('click', function () {
+                $('#cartModal').fadeOut(200);
+            });
         });
     </script>
+
 
     <!-- footer section -->
     <!-- jQery -->

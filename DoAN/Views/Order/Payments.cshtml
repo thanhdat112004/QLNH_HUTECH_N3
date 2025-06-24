@@ -1,0 +1,78 @@
+﻿@model DoAN.Models.Order
+@{
+    ViewData["Title"] = "Thanh Toán";
+}
+
+<div class="container">
+    <h2>Thanh Toán Đơn Hàng</h2>
+
+    <div>
+        <h4><strong>Mã Đơn Hàng: </strong>@Model.OrderId</h4>
+        <h5><strong>Loại Đơn: </strong>@Model.OrderType</h5>
+    </div>
+
+    <div>
+        <h5><strong>Chi Tiết Đơn Hàng:</strong></h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Tên Món</th>
+                    <th scope="col">Số Lượng</th>
+                    <th scope="col">Đơn Giá</th>
+                    <th scope="col">Tổng Tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems)
+                {
+                    <tr>
+                        <td>@item.MenuItem.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.UnitPrice.ToString("C")</td>
+                        <td>@(item.Quantity* item.UnitPrice).ToString("C")</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="3" class="text-right"><strong>Tổng Tiền</strong></td>
+                    <td><strong>@Model.OrderItems.Sum(x => x.Quantity * x.UnitPrice).ToString("C")</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        @if (Model.OrderType == "Takeaway")
+        {
+            <div class="form-group">
+                <label for="customerName">Tên Khách Hàng:</label>
+                <input type="text" id="customerName" class="form-control" value="@Model.ContactInfo.Split('-')[0]" readonly />
+            </div>
+            <div class="form-group">
+                <label for="phone">Số Điện Thoại:</label>
+                <input type="text" id="phone" class="form-control" value="@Model.ContactInfo.Split('-')[1]" readonly />
+            </div>
+            <div class="form-group">
+                <label for="address">Địa Chỉ:</label>
+                <input type="text" id="address" class="form-control" value="@Model.ContactInfo.Split('-')[2]" readonly />
+            </div>
+        }
+        else
+        {
+            <div>
+                <strong>Bàn: </strong>@Model.Table.TableNumber
+            </div>
+        }
+    </div>
+
+    <form method="post" action="@Url.Action("Pay", "Order", new { id = Model.OrderId })">
+        <div class="form-group">
+            <label for="paymentMethod">Chọn Phương Thức Thanh Toán:</label>
+            <select id="paymentMethod" class="form-control" name="paymentMethod" required>
+                <option value="Cash">Tiền Mặt</option>
+                <option value="Card">Thẻ</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Thanh Toán</button>
+    </form>
+</div>

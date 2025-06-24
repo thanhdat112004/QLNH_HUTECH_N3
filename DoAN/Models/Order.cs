@@ -11,7 +11,7 @@ public partial class Order
     [Key]
     public int OrderId { get; set; }
 
-    public int UserId { get; set; }
+    public int? UserId { get; set; }
 
     [StringLength(20)]
     public string OrderType { get; set; } = null!;
