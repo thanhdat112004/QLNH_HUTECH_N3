@@ -1,0 +1,107 @@
+﻿@model DoAN.Models.User
+@{
+    Layout = null;
+    ViewData["Title"] = "Chi tiết người dùng";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="~/css/responsive.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #ffffff;
+        }
+
+        .details-box {
+            background-color: #222831;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 700px;
+            margin: 60px auto;
+        }
+
+        dt {
+            color: #ffbe33;
+        }
+
+        .btn-feane {
+            background-color: #ffbe33;
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 30px;
+            padding: 8px 20px;
+        }
+
+            .btn-feane:hover {
+                background-color: #e69c00;
+            }
+
+        .btn-secondary {
+            border-radius: 30px;
+            padding: 8px 20px;
+        }
+    </style>
+</head>
+<body class="sub_page">
+    <div class="hero_area">
+        <div class="bg-box">
+            <img src="~/images/hero-bg.jpg" alt="background" />
+        </div>
+
+        <header class="header_section">
+            <div class="container">
+                <nav class="navbar navbar-expand-lg custom_nav-container">
+                    <a class="navbar-brand" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                        <span>Feane Admin</span>
+                    </a>
+                </nav>
+            </div>
+        </header>
+    </div>
+
+    <section class="food_section layout_padding">
+        <div class="container">
+            <div class="details-box shadow">
+                <h2 class="text-warning text-center mb-4">
+                    <i class="fa fa-user me-2"></i>Thông tin người dùng
+                </h2>
+
+                <dl class="row fs-5">
+                    <dt class="col-sm-4">Tên đăng nhập:</dt>
+                    <dd class="col-sm-8">@Model.Username</dd>
+
+                    <dt class="col-sm-4">Họ tên:</dt>
+                    <dd class="col-sm-8">@Model.FullName</dd>
+
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+
+                    <dt class="col-sm-4">Xác thực email:</dt>
+                    <dd class="col-sm-8">@((Model.EmailConfirmed ? "✔ Đã xác thực" : "✖ Chưa xác thực"))</dd>
+
+                    <dt class="col-sm-4">Ngày tạo:</dt>
+                    <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                </dl>
+
+                <div class="text-center mt-4">
+                    <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-feane me-2">Sửa</a>
+                    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="~/js/jquery-3.4.1.min.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/custom.js"></script>
+</body>
+</html>
