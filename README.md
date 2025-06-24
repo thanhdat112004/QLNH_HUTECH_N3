@@ -207,6 +207,7 @@ dotnet tool install --global dotnet-ef
 dotnet add package Microsoft.EntityFrameworkCore.SqlServer
 dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet add package BCrypt.Net-Next
+dotnet add package Newtonsoft.Json
 
 # Scaffold toàn bộ database
 
