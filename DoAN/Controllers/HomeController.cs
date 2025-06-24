@@ -1,17 +1,17 @@
 ﻿using System.Diagnostics;
-using DoAN.Data;                   // thêm
+using DoAN.Data;
 using DoAN.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // thêm
+using Microsoft.EntityFrameworkCore;
 
 namespace DoAN.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly AppDbContext _db;  // thêm
+        private readonly AppDbContext _db;
 
-        // inject AppDbContext vào đây
+        // Inject AppDbContext vào constructor
         public HomeController(ILogger<HomeController> logger, AppDbContext db)
         {
             _logger = logger;
@@ -28,12 +28,12 @@ namespace DoAN.Controllers
             return View();
         }
 
-        // sửa lại Menu thành async, load MenuItems kèm Category
+        // Menu - lấy danh sách các món ăn
         public async Task<IActionResult> Menu()
         {
             // 1) Đổ danh sách category lên ViewBag để vẽ các filter button
             ViewBag.Categories = await _db.Categories
-                                         .OrderBy(c => c.Name)   
+                                         .OrderBy(c => c.Name)
                                          .ToListAsync();
 
             var items = await _db.MenuItems
@@ -43,16 +43,32 @@ namespace DoAN.Controllers
             return View(items);
         }
 
+        // Bàn trống - lấy danh sách các bàn có trạng thái "Available"
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableTables()
+        {
+            // Lấy danh sách bàn trống (status = Available)
+            var tables = await _db.RestaurantTables
+                                   .Where(t => t.Status == "Available")
+                                   .Select(t => new { t.TableId, t.TableNumber })
+                                   .ToListAsync();
+
+            return Json(tables);
+        }
+
+        // Đặt bàn - hiển thị form đặt bàn
         public IActionResult Book()
         {
             return View();
         }
 
+        // Giới thiệu - trang giới thiệu
         public IActionResult About()
         {
             return View();
         }
 
+        // Xử lý lỗi
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

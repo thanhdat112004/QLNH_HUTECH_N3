@@ -26,6 +26,20 @@ namespace DoAN.Controllers
             _emailSender = emailSender;
             _pwHasher = new PasswordHasher<User>();
         }
+        [HttpGet]
+        public IActionResult CheckLoginStatus()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var username = User.FindFirstValue(ClaimTypes.Name);
+                return Content($"Chào mừng {username}, bạn đã đăng nhập với ID {userId}.");
+            }
+            else
+            {
+                return Content("Bạn chưa đăng nhập.");
+            }
+        }
         // GET: /Account/Register
         [HttpGet]
         public IActionResult Register()
