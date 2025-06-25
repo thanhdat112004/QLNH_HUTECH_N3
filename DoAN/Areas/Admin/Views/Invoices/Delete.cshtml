@@ -15,10 +15,10 @@
     <div class="card p-4 shadow-sm">
         <dl class="row">
             <dt class="col-sm-4">Tên khách hàng</dt>
-            <dd class="col-sm-8">@Html.DisplayFor(model => model.CustomerName)</dd>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.FullName)</dd>
 
-            <dt class="col-sm-4">Liên hệ</dt>
-            <dd class="col-sm-8">@Html.DisplayFor(model => model.CustomerContact)</dd>
+            <dt class="col-sm-4">Tên đăng nhập</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Username)</dd>
 
             <dt class="col-sm-4">Ngày lập</dt>
             <dd class="col-sm-8">@Model.InvoiceDate.ToString("dd/MM/yyyy")</dd>

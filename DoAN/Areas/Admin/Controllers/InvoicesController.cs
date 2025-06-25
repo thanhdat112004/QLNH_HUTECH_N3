@@ -1,7 +1,6 @@
 ﻿using ClosedXML.Excel;
 using DoAN.Data;
 using DoAN.Models;
-
 using DoAN.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +26,7 @@ namespace DoAN.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var invoices = await _context.Invoices
+                .Include(i => i.User) // Include user to access FullName, Username
                 .Include(i => i.Order)
                 .Include(i => i.InvoiceDetails)
                     .ThenInclude(d => d.MenuItem)
@@ -40,6 +40,7 @@ namespace DoAN.Areas.Admin.Controllers
             if (id == null) return NotFound();
 
             var invoice = await _context.Invoices
+                .Include(i => i.User)
                 .Include(i => i.Order)
                 .Include(i => i.InvoiceDetails)
                     .ThenInclude(d => d.MenuItem)
@@ -79,14 +80,17 @@ namespace DoAN.Areas.Admin.Controllers
         {
             if (id == null) return NotFound();
 
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await _context.Invoices
+                .Include(i => i.User)
+                .FirstOrDefaultAsync(i => i.InvoiceId == id);
+
             if (invoice == null) return NotFound();
 
             var vm = new InvoiceEditViewModel
             {
                 InvoiceId = invoice.InvoiceId,
-                CustomerName = invoice.CustomerName,
-                CustomerContact = invoice.CustomerContact,
+                FullName = invoice.User?.FullName,
+                Username = invoice.User?.Username,
                 InvoiceDate = invoice.InvoiceDate,
                 TotalAmount = invoice.TotalAmount,
                 PaymentMethod = invoice.PaymentMethod
@@ -107,8 +111,6 @@ namespace DoAN.Areas.Admin.Controllers
                 var invoice = await _context.Invoices.FindAsync(id);
                 if (invoice == null) return NotFound();
 
-                invoice.CustomerName = vm.CustomerName;
-                invoice.CustomerContact = vm.CustomerContact;
                 invoice.InvoiceDate = vm.InvoiceDate;
                 invoice.TotalAmount = vm.TotalAmount;
                 invoice.PaymentMethod = vm.PaymentMethod;
@@ -127,6 +129,7 @@ namespace DoAN.Areas.Admin.Controllers
 
             var invoice = await _context.Invoices
                 .Include(i => i.InvoiceDetails)
+                .Include(i => i.User)
                 .FirstOrDefaultAsync(i => i.InvoiceId == id);
 
             if (invoice == null) return NotFound();
@@ -155,6 +158,7 @@ namespace DoAN.Areas.Admin.Controllers
         public async Task<IActionResult> ExportToExcel()
         {
             var invoices = await _context.Invoices
+                .Include(i => i.User)
                 .Include(i => i.InvoiceDetails)
                     .ThenInclude(d => d.MenuItem)
                 .ToListAsync();
@@ -163,8 +167,8 @@ namespace DoAN.Areas.Admin.Controllers
             var sheet = workbook.Worksheets.Add("Invoices");
 
             sheet.Cell(1, 1).Value = "Invoice ID";
-            sheet.Cell(1, 2).Value = "Customer";
-            sheet.Cell(1, 3).Value = "Contact";
+            sheet.Cell(1, 2).Value = "Customer Full Name";
+            sheet.Cell(1, 3).Value = "Username";
             sheet.Cell(1, 4).Value = "Order Type";
             sheet.Cell(1, 5).Value = "Table ID";
             sheet.Cell(1, 6).Value = "Date";
@@ -175,10 +179,10 @@ namespace DoAN.Areas.Admin.Controllers
             foreach (var inv in invoices)
             {
                 sheet.Cell(row, 1).Value = inv.InvoiceId;
-                sheet.Cell(row, 2).Value = inv.CustomerName;
-                sheet.Cell(row, 3).Value = inv.CustomerContact;
+                sheet.Cell(row, 2).Value = inv.User?.FullName ?? "N/A";
+                sheet.Cell(row, 3).Value = inv.User?.Username ?? "N/A";
                 sheet.Cell(row, 4).Value = inv.OrderType;
-                sheet.Cell(row, 5).Value = inv.TableId.HasValue ? inv.TableId.ToString() : "N/A";
+                sheet.Cell(row, 5).Value = inv.TableId?.ToString() ?? "N/A";
                 sheet.Cell(row, 6).Value = inv.InvoiceDate.ToString("dd/MM/yyyy");
                 sheet.Cell(row, 7).Value = inv.TotalAmount;
                 sheet.Cell(row, 8).Value = inv.PaymentMethod;

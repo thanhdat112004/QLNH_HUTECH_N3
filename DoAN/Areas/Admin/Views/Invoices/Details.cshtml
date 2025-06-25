@@ -14,10 +14,10 @@
             <dd class="col-sm-9">@Model.InvoiceId</dd>
 
             <dt class="col-sm-3">Tên khách hàng</dt>
-            <dd class="col-sm-9">@Model.CustomerName</dd>
+            <dd class="col-sm-9">@Model.User?.FullName</dd>
 
-            <dt class="col-sm-3">Liên hệ</dt>
-            <dd class="col-sm-9">@Model.CustomerContact</dd>
+            <dt class="col-sm-3">Tên đăng nhập</dt>
+            <dd class="col-sm-9">@Model.User?.Username</dd>
 
             <dt class="col-sm-3">Ngày lập</dt>
             <dd class="col-sm-9">@Model.InvoiceDate.ToString("dd/MM/yyyy")</dd>
