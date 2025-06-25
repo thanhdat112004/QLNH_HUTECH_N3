@@ -1,0 +1,156 @@
+﻿@model DoAN.Models.Order
+@using System.Globalization
+@{
+    Layout = null;
+    var items = Model.OrderItems.ToList();
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thanh toán đơn hàng #@Model.OrderId</title>
+    <link rel="stylesheet" href="~/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/style.css" /> <!-- Nếu bạn có style từ Feane -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .payment-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #222;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background: #fff;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+            .menu-item img {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 8px;
+                margin-right: 1rem;
+            }
+
+        .menu-details {
+            flex: 1;
+        }
+
+            .menu-details h5 {
+                margin: 0;
+                font-size: 1.1rem;
+                color: #333;
+            }
+
+            .menu-details .price {
+                font-weight: 500;
+                color: #e69c00;
+            }
+
+            .menu-details .qty {
+                font-size: 0.95rem;
+                color: #777;
+            }
+
+        .total {
+            text-align: right;
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 2rem;
+        }
+
+        .form-pay {
+            max-width: 500px;
+            margin: 2rem auto;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-pay {
+            display: inline-block;
+            background: linear-gradient(90deg, #ffbe33 0%, #e69c00 100%);
+            color: #fff;
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 0.75rem 3rem;
+            border: none;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.3s ease;
+            line-height: 1;
+        }
+
+            .btn-pay:hover {
+                background: linear-gradient(90deg, #e69c00, #ffbe33);
+                transform: translateY(-2px);
+            }
+
+
+            .btn-pay:hover {
+                background: #cf8b00;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="payment-title">Thanh toán đơn hàng #@Model.OrderId</h2>
+
+        @foreach (var it in items)
+        {
+            var imagePath = Url.Content(it.MenuItem.ImageUrl.StartsWith("/") ? it.MenuItem.ImageUrl : "~/images/" + it.MenuItem.ImageUrl);
+            <div class="menu-item">
+                <img src="@imagePath" alt="@it.MenuItem.Name" />
+                <div class="menu-details">
+                    <h5>@it.MenuItem.Name</h5>
+                    <div class="qty">Số lượng: @it.Quantity</div>
+                    <div class="price">Đơn giá: @it.UnitPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) đ</div>
+                    <div class="price">
+                        Thành tiền: @((it.Quantity * it.UnitPrice).ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))) đ
+                    </div>
+
+                </div>
+            </div>
+        }
+
+        <div class="total">
+            Tổng cộng: @items.Sum(i => i.Quantity * i.UnitPrice).ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))₫
+        </div>
+
+        <form asp-action="Pay" asp-route-id="@Model.OrderId" method="post" class="form-pay">
+            @Html.AntiForgeryToken()
+            <div class="form-group mb-3">
+                <label for="paymentMethod">Phương thức thanh toán</label>
+                <select name="paymentMethod" class="form-control" required>
+                    <option value="Tiền mặt">Tiền mặt</option>
+                    <option value="Chuyển khoản">Chuyển khoản</option>
+                    <option value="Thẻ tín dụng">Thẻ tín dụng</option>
+                </select>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn-pay">Xác nhận & Thanh toán</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
