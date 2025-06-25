@@ -200,6 +200,7 @@ dotnet add package Microsoft.EntityFrameworkCore.SqlServer
 dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet add package BCrypt.Net-Next
 dotnet add package Newtonsoft.Json
+Install-Package ClosedXML
 
 # Scaffold toàn bộ database
 
