@@ -16,7 +16,7 @@
         <tr>
             <th>Mã hóa đơn</th>
             <th>Khách hàng</th>
-            <th>Liên hệ</th>
+            <th>Tên đăng nhập</th>
             <th>Ngày</th>
             <th>Tổng tiền</th>
             <th>Thanh toán</th>
@@ -28,8 +28,8 @@
         {
             <tr>
                 <td>@item.InvoiceId</td>
-                <td>@item.CustomerName</td>
-                <td>@item.CustomerContact</td>
+                <td>@item.User?.FullName</td>
+                <td>@item.User?.Username</td>
                 <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
                 <td>@item.TotalAmount.ToString("N0") đ</td>
                 <td>@item.PaymentMethod</td>

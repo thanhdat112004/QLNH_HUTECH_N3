@@ -6,13 +6,11 @@ namespace DoAN.Models.ViewModels
     {
         public int InvoiceId { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string CustomerName { get; set; } = null!;
+        [Display(Name = "Khách hàng")]
+        public string? FullName { get; set; }
 
-        [Required]
-        [StringLength(200)]
-        public string CustomerContact { get; set; } = null!;
+        [Display(Name = "Tên đăng nhập")]
+        public string? Username { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime InvoiceDate { get; set; }
