@@ -1,0 +1,39 @@
+﻿@model DoAN.Models.Invoice
+
+@{
+    ViewData["Title"] = "Tạo hoá đơn";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="CustomerName"></label>
+        <input asp-for="CustomerName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="CustomerContact"></label>
+        <input asp-for="CustomerContact" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="OrderType"></label>
+        <input asp-for="OrderType" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="TotalAmount"></label>
+        <input asp-for="TotalAmount" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PaymentMethod"></label>
+        <input asp-for="PaymentMethod" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-success">Tạo</button>
+    <a asp-action="Index" class="btn btn-secondary">Huỷ</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

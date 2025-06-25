@@ -1,0 +1,37 @@
+﻿@model DoAN.Models.Invoice
+
+@{
+    ViewBag.Title = "Chi tiết hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Chi tiết Hóa Đơn</h2>
+
+    <div class="card p-4">
+        <dl class="row">
+            <dt class="col-sm-3">Mã hóa đơn</dt>
+            <dd class="col-sm-9">@Model.InvoiceId</dd>
+
+            <dt class="col-sm-3">Tên khách hàng</dt>
+            <dd class="col-sm-9">@Model.CustomerName</dd>
+
+            <dt class="col-sm-3">Liên hệ</dt>
+            <dd class="col-sm-9">@Model.CustomerContact</dd>
+
+            <dt class="col-sm-3">Ngày lập</dt>
+            <dd class="col-sm-9">@Model.InvoiceDate.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Tổng tiền</dt>
+            <dd class="col-sm-9">@Model.TotalAmount.ToString("N0") đ</dd>
+
+            <dt class="col-sm-3">Phương thức thanh toán</dt>
+            <dd class="col-sm-9">@Model.PaymentMethod</dd>
+        </dl>
+
+        <div class="text-center">
+            <a asp-action="Edit" asp-route-id="@Model.InvoiceId" class="btn btn-warning px-4 py-2 rounded-pill text-white">Chỉnh sửa</a>
+            <a asp-action="Index" class="btn btn-secondary ml-2 px-4 py-2 rounded-pill">Quay lại</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+﻿@model DoAN.Models.Invoice
+
+@{
+    ViewBag.Title = "Chỉnh sửa hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Chỉnh sửa Hóa Đơn</h2>
+
+    <form asp-action="Edit">
+        <input type="hidden" asp-for="InvoiceId" />
+
+        <div class="form-group">
+            <label asp-for="CustomerName"></label>
+            <input asp-for="CustomerName" class="form-control" />
+            <span asp-validation-for="CustomerName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CustomerContact"></label>
+            <input asp-for="CustomerContact" class="form-control" />
+            <span asp-validation-for="CustomerContact" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="InvoiceDate"></label>
+            <input asp-for="InvoiceDate" class="form-control" type="date" />
+            <span asp-validation-for="InvoiceDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TotalAmount"></label>
+            <input asp-for="TotalAmount" class="form-control" />
+            <span asp-validation-for="TotalAmount" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PaymentMethod"></label>
+            <select asp-for="PaymentMethod" class="form-control">
+                <option value="Tiền mặt">Tiền mặt</option>
+                <option value="Chuyển khoản">Chuyển khoản</option>
+                <option value="Thẻ tín dụng">Thẻ tín dụng</option>
+            </select>
+            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-warning px-4 py-2 rounded-pill text-white">Lưu</button>
+            <a asp-action="Index" class="btn btn-secondary ml-2 px-4 py-2 rounded-pill">Hủy</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
