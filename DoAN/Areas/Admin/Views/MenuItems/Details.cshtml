@@ -1,0 +1,134 @@
+﻿@model DoAN.Models.MenuItem
+@{
+    ViewData["Title"] = "Chi tiết món ăn";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="~/css/responsive.css" />
+    <style>
+        body {
+            background-color: #222831;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+        }
+
+        .details-container {
+            max-width: 800px;
+            margin: 60px auto;
+            background: #393e46;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .details-title {
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px;
+            color: #ffbe33;
+            margin-bottom: 30px;
+        }
+
+        .details-label {
+            font-weight: 600;
+            color: #ffbe33;
+        }
+
+        .details-value {
+            color: #eeeeee;
+        }
+
+        .details-img-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .details-img {
+            max-height: 220px;
+            max-width: 100%;
+            border-radius: 15px;
+            border: 3px solid #ffbe33;
+            box-shadow: 0 4px 12px rgba(255, 190, 51, 0.3);
+        }
+
+        .btn-feane {
+            background-color: #ffbe33;
+            color: white;
+            font-weight: 600;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 30px;
+            margin-right: 10px;
+        }
+
+            .btn-feane:hover {
+                background-color: #e69c00;
+            }
+
+        .btn-secondary {
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="details-container">
+        <h2 class="details-title">Chi tiết món: @Model.Name</h2>
+
+        <dl class="row">
+            <dt class="col-sm-4 details-label">Tên món</dt>
+            <dd class="col-sm-8 details-value">@Model.Name</dd>
+
+            <dt class="col-sm-4 details-label">Mô tả</dt>
+            <dd class="col-sm-8 details-value">@Model.Description</dd>
+
+            <dt class="col-sm-4 details-label">Giá</dt>
+            <dd class="col-sm-8 details-value">@Model.Price.ToString("N0") đ</dd>
+
+            <dt class="col-sm-4 details-label">Tồn kho</dt>
+            <dd class="col-sm-8 details-value">@Model.Stock</dd>
+
+            <dt class="col-sm-4 details-label">Danh mục</dt>
+            <dd class="col-sm-8 details-value">@Model.Category?.Name</dd>
+
+            <dt class="col-sm-4 details-label">Nổi bật</dt>
+            <dd class="col-sm-8 details-value">
+                @(Model.IsFeatured ? "Có" : "Không")
+                @if (Model.IsFeatured)
+                {
+                    <span>(Thứ tự: @Model.FeaturedOrder)</span>
+                }
+            </dd>
+
+            <dt class="col-sm-4 details-label">Ảnh món</dt>
+            <dd class="col-sm-8">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="details-img-container">
+                        <img src="@Url.Content(Model.ImageUrl.StartsWith("/") ? Model.ImageUrl : "~/images/" + Model.ImageUrl)" alt="Ảnh món ăn" class="details-img" />
+                    </div>
+                }
+                else
+                {
+                    <span class="details-value"><i>Chưa có ảnh</i></span>
+                }
+            </dd>
+        </dl>
+
+        <div class="text-center mt-4">
+            <a asp-action="Edit" asp-route-id="@Model.MenuItemId" class="btn btn-feane">Sửa</a>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+
+    <script src="~/js/bootstrap.js"></script>
+</body>
+</html>

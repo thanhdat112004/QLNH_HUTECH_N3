@@ -11,6 +11,7 @@ namespace DoAN.Models;
 public partial class Category
 {
     [Key]
+    [Required(ErrorMessage = "Vui lòng chọn loại món")]
     public int CategoryId { get; set; }
 
     [StringLength(100)]

@@ -1,0 +1,145 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="shortcut icon" href="~/images/favicon.png" type="">
+    <title>Feane</title>
+    <link rel="stylesheet" type="text/css" href="~/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ==" crossorigin="anonymous" />
+    <link href="~/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/css/responsive.css" rel="stylesheet" />
+    <style>
+        .dashboard-box {
+            border-radius: 15px;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+            .dashboard-box:hover {
+                transform: translateY(-5px);
+            }
+
+        .dashboard-icon {
+            font-size: 40px;
+            color: #ffbe33;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .dashboard-welcome {
+            font-size: 22px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #333;
+        }
+
+        .dashboard-footer {
+            text-align: center;
+            margin-top: 60px;
+            color: #aaa;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body class="sub_page">
+    <div class="hero_area">
+        <div class="bg-box">
+            <img src="~/images/hero-bg.jpg" alt="">
+        </div>
+        <header class="header_section">
+            <div class="container">
+                <nav class="navbar navbar-expand-lg custom_nav-container">
+                    <a class="navbar-brand" href="/">
+                        <span>Feane</span>
+                    </a>
+                </nav>
+            </div>
+        </header>
+    </div>
+
+    <section class="food_section layout_padding">
+        <div class="container">
+            <div class="heading_container heading_center">
+                <h2>Quản trị hệ thống</h2>
+            </div>
+
+            <p class="dashboard-welcome text-center">Chào mừng bạn đến với trang quản trị. Vui lòng chọn chức năng để tiếp tục.</p>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="text-decoration-none">
+                        <div class="dashboard-box">
+                            <div class="dashboard-icon">
+                                <i class="fa fa-users"></i>
+                            </div>
+                            <div class="dashboard-title">Quản lý nhân viên</div>
+                            <div class="dashboard-desc">Tạo, sửa, phân quyền tài khoản</div>
+                        </div>
+                    </a>
+
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="MenuItems" asp-action="Index" asp-area="Admin" class="text-decoration-none">
+
+                        <div class="dashboard-box">
+                            <div class="dashboard-icon">
+                                <i class="fa fa-cutlery"></i>
+                            </div>
+                            <div class="dashboard-title">Quản lý Menu</div>
+                            <div class="dashboard-desc">CRUD món ăn, set giá, hình ảnh</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Reports" asp-action="Index" asp-area="" class="text-decoration-none">
+                        <div class="dashboard-box">
+                            <div class="dashboard-icon">
+                                <i class="fa fa-bar-chart"></i>
+                            </div>
+                            <div class="dashboard-title">Báo cáo</div>
+                            <div class="dashboard-desc">Doanh thu, tồn kho, hiệu suất nhân viên</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Settings" asp-action="Index" asp-area="" class="text-decoration-none">
+                        <div class="dashboard-box">
+                            <div class="dashboard-icon">
+                                <i class="fa fa-cogs"></i>
+                            </div>
+                            <div class="dashboard-title">Cấu hình chung</div>
+                            <div class="dashboard-desc">Giờ mở-đóng, phí dịch vụ, v.v.</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="~/js/jquery-3.4.1.min.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/custom.js"></script>
+</body>
+</html>
