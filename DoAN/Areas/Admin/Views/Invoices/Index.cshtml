@@ -5,13 +5,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Danh sách Hóa đơn</h2>
+<h2 class="mb-4">Danh sách Hóa đơn</h2>
 
-<a asp-area="Admin" asp-controller="Invoices" asp-action="ExportInvoicesToExcel" class="btn btn-success">
+<a asp-area="Admin" asp-controller="Invoices" asp-action="ExportToExcel" class="btn btn-success mb-3">
     Xuất Excel
 </a>
-<table class="table table-bordered">
-    <thead>
+
+<table class="table table-bordered table-hover shadow-sm">
+    <thead class="table-light">
         <tr>
             <th>Mã hóa đơn</th>
             <th>Khách hàng</th>
@@ -19,7 +20,7 @@
             <th>Ngày</th>
             <th>Tổng tiền</th>
             <th>Thanh toán</th>
-            <th></th>
+            <th style="width: 180px;">Hành động</th>
         </tr>
     </thead>
     <tbody>
@@ -33,10 +34,12 @@
                 <td>@item.TotalAmount.ToString("N0") đ</td>
                 <td>@item.PaymentMethod</td>
                 <td>
-                    <a href="@Url.Action("InvoiceDetails", "Order", new { id = item.InvoiceId })" class="btn btn-sm btn-info">Xem</a>
-                    <form asp-action="DeleteInvoice" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@item.InvoiceId" />
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Xoá hoá đơn này?')">Xoá</button>
+                    <a asp-area="Admin" asp-controller="Invoices" asp-action="Details" asp-route-id="@item.InvoiceId" class="btn btn-sm btn-info">Xem</a>
+                    <a asp-area="Admin" asp-controller="Invoices" asp-action="Edit" asp-route-id="@item.InvoiceId" class="btn btn-sm btn-warning text-white">Sửa</a>
+                    <form asp-area="Admin" asp-controller="Invoices" asp-action="Delete" asp-route-id="@item.InvoiceId"
+                          method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xoá hóa đơn này?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-danger">Xoá</button>
                     </form>
                 </td>
             </tr>

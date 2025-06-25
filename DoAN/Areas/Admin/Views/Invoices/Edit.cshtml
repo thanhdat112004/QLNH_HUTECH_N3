@@ -1,4 +1,4 @@
-﻿@model DoAN.Models.Invoice
+﻿@model DoAN.Models.ViewModels.InvoiceEditViewModel
 
 @{
     ViewBag.Title = "Chỉnh sửa hóa đơn";
@@ -8,39 +8,43 @@
 <div class="container mt-5">
     <h2 class="text-center mb-4">Chỉnh sửa Hóa Đơn</h2>
 
-    <form asp-action="Edit">
+    <form asp-action="Edit" asp-route-id="@Model.InvoiceId" method="post" class="card p-4 shadow-sm rounded">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
         <input type="hidden" asp-for="InvoiceId" />
 
-        <div class="form-group">
-            <label asp-for="CustomerName"></label>
+        <div class="form-group mb-3">
+            <label asp-for="CustomerName" class="form-label">Tên khách hàng</label>
             <input asp-for="CustomerName" class="form-control" />
             <span asp-validation-for="CustomerName" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
-            <label asp-for="CustomerContact"></label>
+        <div class="form-group mb-3">
+            <label asp-for="CustomerContact" class="form-label">Liên hệ</label>
             <input asp-for="CustomerContact" class="form-control" />
             <span asp-validation-for="CustomerContact" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
-            <label asp-for="InvoiceDate"></label>
+        <div class="form-group mb-3">
+            <label asp-for="InvoiceDate" class="form-label">Ngày lập</label>
             <input asp-for="InvoiceDate" class="form-control" type="date" />
             <span asp-validation-for="InvoiceDate" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
-            <label asp-for="TotalAmount"></label>
+        <div class="form-group mb-3">
+            <label asp-for="TotalAmount" class="form-label">Tổng tiền</label>
             <input asp-for="TotalAmount" class="form-control" />
             <span asp-validation-for="TotalAmount" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
-            <label asp-for="PaymentMethod"></label>
+        <div class="form-group mb-4">
+            <label asp-for="PaymentMethod" class="form-label">Phương thức thanh toán</label>
             <select asp-for="PaymentMethod" class="form-control">
-                <option value="Tiền mặt">Tiền mặt</option>
-                <option value="Chuyển khoản">Chuyển khoản</option>
-                <option value="Thẻ tín dụng">Thẻ tín dụng</option>
+                <option value="">-- Chọn phương thức thanh toán --</option>
+                <option value="Tiền mặt" selected="@("Tiền mặt" == Model.PaymentMethod)">Tiền mặt</option>
+                <option value="Chuyển khoản" selected="@("Chuyển khoản" == Model.PaymentMethod)">Chuyển khoản</option>
+                <option value="Thẻ tín dụng" selected="@("Thẻ tín dụng" == Model.PaymentMethod)">Thẻ tín dụng</option>
             </select>
             <span asp-validation-for="PaymentMethod" class="text-danger"></span>
         </div>
@@ -53,7 +57,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
