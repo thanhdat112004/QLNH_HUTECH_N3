@@ -447,11 +447,17 @@
             </div>
         </div>
     </footer>
+<<<<<<< HEAD
+=======
+    @using System.Security.Claims
+    @* Modal Giỏ hàng *@
+>>>>>>> UI
     <div class="custom-modal" id="cartModal">
         <button class="close-modal-btn" id="closeModalBtn">&times;</button>
         <h5>Giỏ hàng của bạn</h5>
         <div id="cartItems"></div>
         <hr />
+<<<<<<< HEAD
         <div style="margin: 1rem 0;">
             <label><strong>Hình thức:</strong></label><br />
             <label><input type="radio" name="orderType" value="DineIn" checked /> Ăn tại bàn</label><br />
@@ -463,6 +469,36 @@
             <div id="availableTables">
                 <!-- Các bàn sẽ được liệt kê ở đây -->
             </div>
+=======
+
+        <div style="margin: 1rem 0;">
+            <label><strong>Hình thức:</strong></label><br />
+            @if (User.Identity.IsAuthenticated)
+            {
+                <label>
+                    <input type="radio" name="orderType" value="DineIn" />
+                    Ăn tại bàn
+                </label>
+                <br />
+            }
+            <label>
+                <input type="radio" name="orderType" value="Takeaway" @(User.Identity.IsAuthenticated ? string.Empty : "checked") />
+                Mang về
+            </label>
+        </div>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <input type="hidden" id="selectedTableId" />
+        }
+
+        <div class="actions" style="margin-top:1rem;">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <button id="orderMoreBtn" class="btn-modal">Gọi món</button>
+            }
+            <button id="checkoutCart" class="btn-modal">Thanh toán</button>
+>>>>>>> UI
         </div>
 
         <div id="dineinActions">
@@ -470,6 +506,7 @@
         </div>
         <button id="checkoutCart" class="btn-modal">Thanh toán</button>
     </div>
+<<<<<<< HEAD
 
     <!-- jQuery -->
     <script src="~/js/jquery-3.4.1.min.js"></script>
@@ -640,6 +677,216 @@
             });
         });
     </script>
+=======
+
+    <script src="~/js/jquery-3.4.1.min.js"></script>
+    <script>
+        $(function () {
+          const userIsAuth = @User.Identity.IsAuthenticated.ToString().ToLower() === 'true';
+          const userName = '@User.Identity.Name';
+          const userEmail = '@User.FindFirst(ClaimTypes.Email)?.Value';
+
+          let cart = JSON.parse(localStorage.getItem('cart')) || [];
+          let currentTableId = null;
+          let currentOrderId = null;
+
+          // Cập nhật hiển thị giỏ hàng
+          function updateCart() {
+            const $list = $('#cartItems').empty();
+            if (!cart.length) {
+              $list.html('<p>Giỏ hàng trống.</p>');
+              return;
+            }
+            cart.forEach(item => {
+              $list.append(`
+                <div class="cart-item" data-id="${item.id}">
+                  <img src="${item.image}" alt="${item.name}" width="60" height="60" />
+                  <div class="details">
+                    <strong>${item.name}</strong><br />
+                    ${item.quantity} × $${item.price.toFixed(2)}
+                  </div>
+                  <div class="qty-controls">
+                    <button class="decrease">–</button>
+                    <span>${item.quantity}</span>
+                    <button class="increase">+</button>
+                    <button class="remove">×</button>
+                  </div>
+                </div>
+              `);
+            });
+            localStorage.setItem('cart', JSON.stringify(cart));
+          }
+
+          // Lấy bàn trống mới
+          function pickTable() {
+            return $.get('/Home/GetAvailableTables').done(data => {
+              if (data && data.length) {
+                currentTableId = data[0].tableId;
+                $('#selectedTableId').val(currentTableId);
+              } else {
+                currentTableId = null;
+                $('#selectedTableId').val('');
+              }
+            });
+          }
+
+          // Lấy đơn DineIn chưa thanh toán của user (nếu có)
+          function loadCurrentOrder() {
+            return $.get('/Order/GetCurrentUnpaidOrder').done(data => {
+              if (data && data.tableId) {
+                // Nếu đã có đơn cũ thì giữ nguyên tableId và orderId
+                currentTableId = data.tableId;
+                currentOrderId = data.orderId;
+                $('#selectedTableId').val(currentTableId);
+              } else {
+                // Chưa có đơn thì reset và chọn bàn mới
+                currentTableId = currentOrderId = null;
+                $('#selectedTableId').val('');
+                return pickTable();
+              }
+            });
+          }
+
+          // Xử lý khi đổi hình thức order
+          $('input[name="orderType"]').on('change', function () {
+            const type = $('input[name="orderType"]:checked').val();
+            if (type === 'DineIn') {
+              $('#orderMoreBtn').show();
+              loadCurrentOrder();
+            } else {
+              $('#orderMoreBtn').hide();
+              currentTableId = currentOrderId = null;
+              $('#selectedTableId').val('');
+            }
+          });
+
+          // Thêm sản phẩm vào giỏ
+          $(document).on('click', '.add-cart', function (e) {
+            e.preventDefault();
+            const id = +$(this).data('id');
+            const name = $(this).data('name');
+            const price = +$(this).data('price');
+            const image = $(this).data('image');
+            const existing = cart.find(x => x.id === id);
+            if (existing) existing.quantity++;
+            else cart.push({ id, name, price, image, quantity: 1 });
+            updateCart();
+            $('#cartModal').fadeIn();
+
+            // Nếu DineIn và chưa có đơn thì load hoặc pick bàn
+            if ($('input[name="orderType"]:checked').val() === 'DineIn' && !currentOrderId) {
+              loadCurrentOrder();
+            }
+          });
+
+          // Điều khiển số lượng trong giỏ
+          $('#cartItems').on('click', '.increase, .decrease, .remove', function () {
+            const id = +$(this).closest('.cart-item').data('id');
+            const idx = cart.findIndex(x => x.id === id);
+            if ($(this).hasClass('increase')) cart[idx].quantity++;
+            if ($(this).hasClass('decrease')) {
+              if (cart[idx].quantity > 1) cart[idx].quantity--;
+              else cart.splice(idx, 1);
+            }
+            if ($(this).hasClass('remove')) cart.splice(idx, 1);
+            updateCart();
+          });
+
+          // Gọi thêm món (DineIn)
+          $('#orderMoreBtn').on('click', function () {
+            if (!cart.length) return alert('Giỏ hàng trống!');
+            if (!currentTableId) return alert('Không tìm thấy bàn.');
+            $.post('@Url.Action("CallItem", "Order")', {
+              cartData: JSON.stringify(cart),
+              tableId: currentTableId
+            })
+            .done(res => {
+              alert(res.message);
+              cart = [];
+              updateCart();
+              $('#cartModal').fadeOut();
+              currentOrderId = res.orderId;
+            })
+            .fail(xhr => alert(xhr.responseText));
+          });
+
+          // Thanh toán (Takeaway & DineIn)
+          $('#checkoutCart').on('click', function () {
+            if (!cart.length && !currentOrderId) {
+              alert('Giỏ hàng trống!');
+              return;
+            }
+            const type = $('input[name="orderType"]:checked').val();
+
+            if (type === 'Takeaway') {
+              // --- XỬ LÝ MANG VỀ ---
+              if (userIsAuth) {
+                const phone = prompt('Vui lòng nhập số điện thoại:');
+                if (!phone) { alert('Số điện thoại không được để trống.'); return; }
+                $.post('@Url.Action("Create", "Order")', {
+                  cartData: JSON.stringify(cart),
+                  type: 'Takeaway',
+                  customerName: userName,
+                  phone: phone,
+                  address: userEmail
+                })
+                .done(res => window.location.href = `/Order/Confirmation/${res.orderId}`)
+                .fail(xhr => alert(xhr.responseText));
+              } else {
+                const name = prompt('Vui lòng nhập tên khách:');
+                const phone = prompt('Vui lòng nhập số điện thoại:');
+                const address = prompt('Vui lòng nhập địa chỉ giao hàng:');
+                if (!name || !phone || !address) {
+                  alert('Vui lòng nhập đầy đủ tên, số điện thoại và địa chỉ.');
+                  return;
+                }
+                $.post('@Url.Action("Create", "Order")', {
+                  cartData: JSON.stringify(cart),
+                  type: 'Takeaway',
+                  customerName: name,
+                  phone: phone,
+                  address: address
+                })
+                .done(res => window.location.href = `/Order/Confirmation/${res.orderId}`)
+                .fail(xhr => alert(xhr.responseText));
+              }
+
+            } else if (type === 'DineIn') {
+              // --- XỬ LÝ ĂN TẠI BÀN ---
+              if (currentOrderId) {
+                // Nếu có đơn chưa thanh toán, chuyển thẳng sang trang xác nhận
+                window.location.href = `/Order/Confirmation/${currentOrderId}`;
+              }
+              else if (currentTableId) {
+                // Lần đầu gọi món: tạo đơn + gọi món
+                $.post('@Url.Action("CallItem", "Order")', {
+                  cartData: JSON.stringify(cart),
+                  tableId: currentTableId
+                })
+                .done(res => {
+                  window.location.href = `/Order/Confirmation/${res.orderId}`;
+                })
+                .fail(xhr => alert(xhr.responseText));
+              }
+              else {
+                alert('Vui lòng chọn bàn.');
+              }
+            }
+          });
+
+          // Đóng modal
+          $('#closeModalBtn').on('click', () => $('#cartModal').fadeOut());
+
+          // Khởi tạo
+          updateCart();
+          $('input[name="orderType"]:checked').trigger('change');
+        });
+    </script>
+
+
+
+
+>>>>>>> UI
 
 
     <!-- footer section -->
