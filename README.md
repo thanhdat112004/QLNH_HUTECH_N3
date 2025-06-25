@@ -60,14 +60,6 @@ CREATE TABLE Categories (
 );
 GO
 
--- Seed một số danh mục mẫu
-INSERT INTO Categories (Name, Slug)
-VALUES
-  ('Burger', 'burger'),
-  ('Pizza',  'pizza'),
-  ('Pasta',  'pasta'),
-  ('Fries',  'fries');
-GO
 
 -- 6. MenuItems: danh mục món, kèm flag featured
 CREATE TABLE MenuItems (
