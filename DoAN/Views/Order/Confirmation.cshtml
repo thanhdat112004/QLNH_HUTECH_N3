@@ -1,45 +1,4 @@
 ﻿@model DoAN.Models.Order
-<<<<<<< HEAD
-@{
-    ViewBag.Title = "Xác nhận đơn hàng";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-<div class="container mt-5">
-    <h2 class="mb-4 text-success">✅ Đơn hàng đã được tạo!</h2>
-
-    <p><strong>Mã đơn hàng:</strong> @Model.OrderId</p>
-    <p><strong>Thời gian đặt:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
-    <p><strong>Loại đơn:</strong> @Model.OrderType</p>
-
-    @if (Model.OrderType == "Takeaway")
-    {
-        <p><strong>Thông tin khách:</strong> @Model.ContactInfo</p>
-    }
-    else if (Model.Table != null)
-    {
-        <p><strong>Bàn số:</strong> @Model.Table.TableNumber</p>
-    }
-
-    <hr />
-    <h4>🧾 Danh sách món ăn</h4>
-    <ul>
-        @foreach (var item in Model.OrderItems)
-        {
-            <li>
-                <strong>@item.MenuItem.Name</strong> – @item.Quantity x @item.UnitPrice.ToString("N0")₫
-            </li>
-        }
-    </ul>
-
-    <hr />
-    <form asp-action="Pay" asp-controller="Order" method="post">
-        <input type="hidden" name="id" value="@Model.OrderId" />
-        <button type="submit" class="btn btn-warning btn-lg">💳 Thanh toán ngay</button>
-        <a href="@Url.Action("Menu", "Home")" class="btn btn-secondary btn-lg ml-2">⬅ Quay lại thực đơn</a>
-    </form>
-</div>
-=======
 @using System.Globalization
 @{
     Layout = null;
@@ -393,4 +352,3 @@
     <script src="~/js/custom.js"></script>
 </body>
 </html>
->>>>>>> UI
