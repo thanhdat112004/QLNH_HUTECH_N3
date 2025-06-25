@@ -1,0 +1,39 @@
+﻿@model DoAN.Models.Invoice
+
+@{
+    ViewBag.Title = "Xóa hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center text-danger mb-4">Xóa Hóa Đơn</h2>
+
+    <div class="alert alert-warning">
+        <strong>Bạn có chắc muốn xóa hóa đơn này?</strong>
+    </div>
+
+    <dl class="row">
+        <dt class="col-sm-4">Tên khách hàng</dt>
+        <dd class="col-sm-8">@Model.CustomerName</dd>
+
+        <dt class="col-sm-4">Liên hệ</dt>
+        <dd class="col-sm-8">@Model.CustomerContact</dd>
+
+        <dt class="col-sm-4">Ngày lập</dt>
+        <dd class="col-sm-8">@Model.InvoiceDate.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-4">Tổng tiền</dt>
+        <dd class="col-sm-8">@Model.TotalAmount.ToString("N0") đ</dd>
+
+        <dt class="col-sm-4">Phương thức</dt>
+        <dd class="col-sm-8">@Model.PaymentMethod</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="InvoiceId" />
+        <div class="text-center">
+            <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill">Xóa</button>
+            <a asp-action="Index" class="btn btn-secondary ml-2 px-4 py-2 rounded-pill">Hủy</a>
+        </div>
+    </form>
+</div>

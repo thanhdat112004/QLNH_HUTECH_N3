@@ -1,0 +1,45 @@
+﻿@model IEnumerable<DoAN.Models.Invoice>
+
+@{
+    ViewBag.Title = "Danh sách hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Danh sách Hóa đơn</h2>
+
+<a asp-area="Admin" asp-controller="Invoices" asp-action="ExportInvoicesToExcel" class="btn btn-success">
+    Xuất Excel
+</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã hóa đơn</th>
+            <th>Khách hàng</th>
+            <th>Liên hệ</th>
+            <th>Ngày</th>
+            <th>Tổng tiền</th>
+            <th>Thanh toán</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.InvoiceId</td>
+                <td>@item.CustomerName</td>
+                <td>@item.CustomerContact</td>
+                <td>@item.InvoiceDate.ToString("dd/MM/yyyy")</td>
+                <td>@item.TotalAmount.ToString("N0") đ</td>
+                <td>@item.PaymentMethod</td>
+                <td>
+                    <a href="@Url.Action("InvoiceDetails", "Order", new { id = item.InvoiceId })" class="btn btn-sm btn-info">Xem</a>
+                    <form asp-action="DeleteInvoice" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@item.InvoiceId" />
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Xoá hoá đơn này?')">Xoá</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
