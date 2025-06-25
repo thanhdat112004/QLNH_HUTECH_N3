@@ -599,22 +599,27 @@
           });
 
           // Gọi thêm món (DineIn)
-          $('#orderMoreBtn').on('click', function () {
+            $('#orderMoreBtn').on('click', function () {
             if (!cart.length) return alert('Giỏ hàng trống!');
             if (!currentTableId) return alert('Không tìm thấy bàn.');
+
             $.post('@Url.Action("CallItem", "Order")', {
-              cartData: JSON.stringify(cart),
-              tableId: currentTableId
+                cartData: JSON.stringify(cart),
+                tableId: currentTableId
             })
             .done(res => {
-              alert(res.message);
-              cart = [];
-              updateCart();
-              $('#cartModal').fadeOut();
-              currentOrderId = res.orderId;
+                if (res.success) {
+                    alert("Đã gọi món cho đơn hàng #" + res.orderId);
+                    cart = [];
+                    updateCart();
+                    $('#cartModal').fadeOut();
+                    currentOrderId = res.orderId;
+                } else {
+                    alert("Gọi món thất bại.");
+                }
             })
             .fail(xhr => alert(xhr.responseText));
-          });
+        });
 
           // Thanh toán (Takeaway & DineIn)
           $('#checkoutCart').on('click', function () {

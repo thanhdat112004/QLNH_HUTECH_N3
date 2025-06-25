@@ -254,11 +254,12 @@
                 <h4 class="mb-3">
                     Tổng cộng: @($"{items.Sum(i => i.Quantity * i.UnitPrice):N0}₫")
                 </h4>
-                <a asp-action="Pay"
+                <a asp-action="Payment"
                    asp-route-id="@Model.OrderId"
                    class="btn1">
                     Xác nhận và Thanh toán
                 </a>
+
             </div>
         </div>
     </section>
